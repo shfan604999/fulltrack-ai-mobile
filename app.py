@@ -1,6 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import tempfile
+
 from ball_tracker import track_ball
 from speed_calc import calculate_speed
 
@@ -10,13 +11,13 @@ st.title("🏏 Cricket Ball Speed Analyzer")
 
 video = st.file_uploader("Upload bowling video", type=["mp4"])
 
-if video:
+if video is not None:
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         tmp.write(video.read())
         video_path = tmp.name
 
     st.video(video_path)
-    st.info("⏳ AI analyzing ball...")
+    st.info("⏳ AI analyzing video...")
 
     positions = track_ball(video_path)
 
@@ -34,4 +35,4 @@ if video:
 
         st.success(f"🔥 Ball Speed: {speed} km/h")
     else:
-        st.error("❌ Ball not detected. Use clear slow-motion video.")
+        st.error("❌ Ball not detected. Try clear slow-motion video.")
