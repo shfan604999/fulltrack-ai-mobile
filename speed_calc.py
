@@ -1,0 +1,24 @@
+import math
+
+def calculate_speed(positions, fps=30):
+    if len(positions) < 2:
+        return 0
+
+    total_distance = 0
+
+    for i in range(1, len(positions)):
+        x1, y1 = positions[i-1]
+        x2, y2 = positions[i]
+
+        dist = math.sqrt((x2-x1)**2 + (y2-y1)**2)
+        total_distance += dist
+
+    time_seconds = len(positions) / fps
+
+    # pixel to meter conversion (approx)
+    meters = total_distance * 0.01  
+
+    speed_mps = meters / time_seconds
+    speed_kmph = speed_mps * 3.6
+
+    return round(speed_kmph, 1)
