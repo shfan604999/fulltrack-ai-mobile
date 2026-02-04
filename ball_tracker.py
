@@ -1,0 +1,38 @@
+import cv2
+import numpy as np
+
+def track_ball(video_path):
+    cap = cv2.VideoCapture(video_path)
+    positions = []
+
+    ret, first_frame = cap.read()
+    if not ret:
+        return positions
+
+    prev_gray = cv2.cvtColor(first_frame, cv2.COLOR_BGR2GRAY)
+
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        diff = cv2.absdiff(prev_gray, gray)
+        blur = cv2.GaussianBlur(diff, (5, 5), 0)
+        _, thresh = cv2.threshold(blur, 25, 255, cv2.THRESH_BINARY)
+
+        contours, _ = cv2.findContours(
+            thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        )
+
+        for cnt in contours:
+            if cv2.contourArea(cnt) > 150:
+                x, y, w, h = cv2.boundingRect(cnt)
+                cx = x + w // 2
+                cy = y + h // 2
+                positions.append((cx, cy))
+
+        prev_gray = gray
+
+    cap.release()
+    return positions
